@@ -46,15 +46,18 @@ open class PhoneNumberTextField: UITextField, UITextFieldDelegate {
         get {
             return self._defaultRegion
         }
-        @available(
+        /*@available(
             *,
             deprecated,
             message: """
                 The setter of defaultRegion is deprecated,
                 please override defaultRegion in a subclass instead.
             """
-        )
+        )*/
         set {
+            if PhoneNumberKit.AllowDefaultCountryCodeOverride {
+                self._defaultRegion = newValue
+            }
             self.partialFormatter.defaultRegion = newValue
         }
     }

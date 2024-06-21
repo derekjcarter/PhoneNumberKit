@@ -14,6 +14,9 @@ import Contacts
 public typealias MetadataCallback = () throws -> Data?
 
 public final class PhoneNumberKit {
+    
+    public static var AllowDefaultCountryCodeOverride = true
+    
     // Manager objects
     let metadataManager: MetadataManager
     let parseManager: ParseManager
@@ -284,6 +287,10 @@ public final class PhoneNumberKit {
     ///
     /// - returns: A computed value for the user's current region - based on the iPhone's carrier and if not available, the device region.
     public class func defaultRegionCode() -> String {
+        if PhoneNumberKit.AllowDefaultCountryCodeOverride {
+            return PhoneNumberConstants.defaultCountry
+        }
+        
         guard let regex = try? NSRegularExpression(pattern: PhoneNumberPatterns.countryCodePattern) else {
             return PhoneNumberConstants.defaultCountry
         }
