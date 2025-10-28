@@ -8,21 +8,21 @@
 
 import Foundation
 
-/// Parsed phone number object
-///
-/// - numberString: String used to generate phone number struct
-/// - countryCode: Country dialing code as an unsigned. Int.
-/// - leadingZero: Some countries (e.g. Italy) require leading zeros. Bool.
-/// - nationalNumber: National number as an unsigned. Int.
-/// - numberExtension: Extension if available. String. Optional
-/// - type: Computed phone number type on access. Returns from an enumeration - PNPhoneNumberType.
-public struct PhoneNumber {
+/// A parsed phone number representation.
+public struct PhoneNumber: Sendable {
+    /// The original string used to generate this phone number.
     public let numberString: String
+    /// The international dialing code (e.g., 1 for US/Canada, 44 for UK).
     public let countryCode: UInt64
+    /// Indicates whether the phone number includes a leading zero, as required by some countries (e.g., Italy).
     public let leadingZero: Bool
+    /// The national portion of the phone number, excluding the country code.
     public let nationalNumber: UInt64
+    /// An optional phone number extension, if available.
     public let numberExtension: String?
+    /// The type of phone number (e.g., mobile, fixed line), as determined during parsing.
     public let type: PhoneNumberType
+    /// The region identifier associated with the phone number (e.g., "US", "GB").
     public let regionID: String?
 }
 
@@ -64,12 +64,12 @@ public extension PhoneNumber {
     }
 }
 
-/// In past versions of PhoneNumberKit you were able to initialize a PhoneNumber object to parse a String. Please use a PhoneNumberKit object's methods.
+/// In past versions of PhoneNumberKit you were able to initialize a PhoneNumber object to parse a String. Please use a PhoneNumberUtility object's methods.
 public extension PhoneNumber {
     /// DEPRECATED.
     /// Parse a string into a phone number object using default region. Can throw.
     /// - Parameter rawNumber: String to be parsed to phone number struct.
-    @available(*, unavailable, message: "use PhoneNumberKit instead to produce PhoneNumbers")
+    @available(*, unavailable, message: "use PhoneNumberUtility instead to produce PhoneNumbers")
     init(rawNumber: String) throws {
         assertionFailure(PhoneNumberError.deprecated.localizedDescription)
         throw PhoneNumberError.deprecated
@@ -79,7 +79,7 @@ public extension PhoneNumber {
     /// Parse a string into a phone number object using custom region. Can throw.
     /// - Parameter rawNumber: String to be parsed to phone number struct.
     /// - Parameter region: ISO 3166 compliant region code.
-    @available(*, unavailable, message: "use PhoneNumberKit instead to produce PhoneNumbers")
+    @available(*, unavailable, message: "use PhoneNumberUtility instead to produce PhoneNumbers")
     init(rawNumber: String, region: String) throws {
         throw PhoneNumberError.deprecated
     }

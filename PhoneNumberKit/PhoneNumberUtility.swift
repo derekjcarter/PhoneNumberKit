@@ -1,5 +1,5 @@
 //
-//  PhoneNumberKit.swift
+//  PhoneNumberUtility.swift
 //  PhoneNumberKit
 //
 //  Created by Roy Marmelstein on 03/10/2015.
@@ -13,8 +13,8 @@ import Contacts
 
 public typealias MetadataCallback = () throws -> Data?
 
-public final class PhoneNumberKit {
-    
+public final class PhoneNumberUtility {
+
     public static var AllowDefaultCountryCodeOverride = true
     
     // Manager objects
@@ -24,7 +24,7 @@ public final class PhoneNumberKit {
 
     // MARK: Lifecycle
 
-    public init(metadataCallback: @escaping MetadataCallback = PhoneNumberKit.defaultMetadataCallback) {
+    public init(metadataCallback: @escaping MetadataCallback = defaultMetadataCallback) {
         self.metadataManager = MetadataManager(metadataCallback: metadataCallback)
         self.parseManager = ParseManager(metadataManager: self.metadataManager, regexManager: self.regexManager)
     }
@@ -38,7 +38,7 @@ public final class PhoneNumberKit {
     ///   - region: ISO 3166 compliant region code.
     ///   - ignoreType: Avoids number type checking for faster performance.
     /// - Returns: PhoneNumber object.
-    public func parse(_ numberString: String, withRegion region: String = PhoneNumberKit.defaultRegionCode(), ignoreType: Bool = false) throws -> PhoneNumber {
+    public func parse(_ numberString: String, withRegion region: String = defaultRegionCode(), ignoreType: Bool = false) throws -> PhoneNumber {
         try self.parseManager.parse(numberString, withRegion: region, ignoreType: ignoreType)
     }
 
@@ -49,7 +49,7 @@ public final class PhoneNumberKit {
     /// - parameter ignoreType:   Avoids number type checking for faster performance.
     ///
     /// - returns: array of PhoneNumber objects.
-    public func parse(_ numberStrings: [String], withRegion region: String = PhoneNumberKit.defaultRegionCode(), ignoreType: Bool = false, shouldReturnFailedEmptyNumbers: Bool = false) -> [PhoneNumber] {
+    public func parse(_ numberStrings: [String], withRegion region: String = defaultRegionCode(), ignoreType: Bool = false, shouldReturnFailedEmptyNumbers: Bool = false) -> [PhoneNumber] {
         return self.parseManager.parseMultiple(numberStrings, withRegion: region, ignoreType: ignoreType, shouldReturnFailedEmptyNumbers: shouldReturnFailedEmptyNumbers)
     }
 
@@ -62,7 +62,7 @@ public final class PhoneNumberKit {
     ///   - region: ISO 3166 compliant region code.
     ///   - ignoreType: Avoids number type checking for faster performance.
     /// - Returns: Bool
-    public func isValidPhoneNumber(_ numberString: String, withRegion region: String = PhoneNumberKit.defaultRegionCode(), ignoreType: Bool = false) -> Bool {
+    public func isValidPhoneNumber(_ numberString: String, withRegion region: String = defaultRegionCode(), ignoreType: Bool = false) -> Bool {
         return (try? self.parse(numberString, withRegion: region, ignoreType: ignoreType)) != nil
     }
 
@@ -83,7 +83,7 @@ public final class PhoneNumberKit {
             }
             return "+\(phoneNumber.countryCode)\(formattedNationalNumber)"
         } else {
-            let formatter = Formatter(phoneNumberKit: self)
+            let formatter = Formatter(regexManager: regexManager)
             let regionMetadata = self.metadataManager.mainTerritory(forCode: phoneNumber.countryCode)
             let formattedNationalNumber = formatter.format(phoneNumber: phoneNumber, formatType: formatType, regionMetadata: regionMetadata)
             if formatType == .international, prefix == true {
@@ -287,7 +287,7 @@ public final class PhoneNumberKit {
     ///
     /// - returns: A computed value for the user's current region - based on the iPhone's carrier and if not available, the device region.
     public class func defaultRegionCode() -> String {
-        if PhoneNumberKit.AllowDefaultCountryCodeOverride {
+        if PhoneNumberUtility.AllowDefaultCountryCodeOverride {
             return PhoneNumberConstants.defaultCountry
         }
         
@@ -354,17 +354,15 @@ public final class PhoneNumberKit {
 }
 
 #if canImport(UIKit)
-public extension PhoneNumberKit {
-    /// Configuration for the CountryCodePicker presented from PhoneNumberTextField if `withDefaultPickerUI` is `true`
-    enum CountryCodePicker {
-        /// Common Country Codes are shown below the Current section in the CountryCodePicker by default
-        public static var commonCountryCodes: [String] = []
+/// Configuration for the CountryCodePicker presented from PhoneNumberTextField if `withDefaultPickerUI` is `true`
+public enum CountryCodePicker {
+    /// Common Country Codes are shown below the Current section in the CountryCodePicker by default
+    public static var commonCountryCodes: [String] = []
 
-        /// When the Picker is shown from the textfield it is presented modally
-        public static var forceModalPresentation: Bool = false
+    /// When the Picker is shown from the textfield it is presented modally
+    public static var forceModalPresentation: Bool = false
 
-        /// Set the search bar of the Picker to always visible
-        public static var alwaysShowsSearchBar: Bool = false
-    }
+    /// Set the search bar of the Picker to always visible
+    public static var alwaysShowsSearchBar: Bool = false
 }
 #endif
